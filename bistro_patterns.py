@@ -5,7 +5,11 @@
 不改 lab2_context_budget.py，用 import 的方式擴充，原檔維持乾淨。
 用法：python bistro_patterns.py bistro_conversation.txt
 """
+import os
 import sys
+
+# 課程腳本放在 course-scripts/(未納入版控,見 README)。
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "course-scripts"))
 import lab2_context_budget as lab2
 
 # 這四種被改寫掉，整段對話就作廢——客人回不來、店裡也查不到。

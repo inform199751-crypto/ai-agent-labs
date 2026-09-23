@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+
+# 課程提供的腳本,授權未確認,不隨此專案散布。
+# 放進這個目錄就能重跑,見 README。
+course-scripts/

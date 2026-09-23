@@ -1,0 +1,7 @@
+# Lab 5 Part A｜微醺之夜 Bistro：第一版（直覺寫法）
+# U1 訊息序列
+assert resp["message"].startswith("很抱歉,2026-08-17 是週一")
+# U3 成本／快取
+assert quote["total"] == 1188
+# U7 安全邊界
+assert ops_resp["message"] == "授權碼不正確,無法查詢營運數據。"

@@ -1,0 +1,19 @@
+assert result["ok"] is True
+assert result["authorized"] is True
+assert isinstance(result["rows"], list)
+assert len(result["rows"]) > 0
+assert "rows" not in result
+assert isinstance(result["days"], list)
+assert isinstance(result["gaps"], list)
+assert len(summary) * 3 < len(detail)
+assert {d["date"] for d in summary["days"]} == {r["date"] for r in detail["rows"]}
+assert "rows" not in result
+assert isinstance(result["rows"], list)
+assert result["ok"] is True, result.get("message")
+assert result["authorized"] is True
+assert result["metric"] == metric
+assert result["ok"] is False
+assert result["authorized"] is False
+assert not any(ch.isdigit() for ch in result["message"])
+assert result["ok"] is False
+assert result["authorized"] is True

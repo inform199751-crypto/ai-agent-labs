@@ -1,0 +1,7 @@
+# Lab 5 Part A｜微醺之夜 Bistro：重寫成行為契約
+# U1 訊息序列：每個 parameter-extractor 宣告的欄位，都要被下游 HTTP body 引用（不能有孤兒輸出）
+assert set(extractor_outputs(n)) <= set(downstream_refs(n)) for every n in dsl.parameter_extractors
+# U3 成本／快取：帳單總額必須等於用 menu.yaml 重算的結果，不是某個凍結的數字
+assert quote["total"] == sum(menu[name]["price"] * qty for name, qty in items) + service_charge(subtotal)
+# U7 安全邊界：任何未授權的 /ops 回應，都不得洩漏任何一個數字
+assert not any(ch.isdigit() for ch in ops_resp["message"]) whenever ops_resp["authorized"] is False

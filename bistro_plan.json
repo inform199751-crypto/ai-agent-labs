@@ -1,0 +1,75 @@
+{
+  "_note": "把 bistro_concierge 現有的六個真實工作負載，當成『如果改用多代理重建』的委派計畫草案。Bistro 目前沒有任何子代理，這是設計提案不是現況稽核。",
+  "fixed_cost_per_subagent": 4710,
+  "_fixed_cost_source": "prompts/build/system_guest.md 3126 tokens + lab1 v2 四支工具 schema 1584 tokens",
+  "parent_max_iterations": 500,
+  "subagent_max_iterations": 50,
+  "tasks": [
+    {
+      "goal": "每日食材價格監控（price_watch.py）",
+      "_basis": "政府 API 一次回 24 市場、近千種作物、最近四天；過濾成 recipes.yaml 的 open_market 品項後只剩幾筆超標警示",
+      "process_tokens": 55000,
+      "result_tokens": 150,
+      "group": "daily",
+      "has_output_schema": true,
+      "waits_for_external": false,
+      "starts_background_process": false,
+      "must_survive_restart": true
+    },
+    {
+      "goal": "顧客評論六面向分析（review_insight.py）",
+      "_basis": "讀完整批評論，吐出六個面向的次數統計與最大痛點",
+      "process_tokens": 35000,
+      "result_tokens": 300,
+      "group": "weekly",
+      "has_output_schema": true,
+      "waits_for_external": false,
+      "starts_background_process": false,
+      "must_survive_restart": false
+    },
+    {
+      "goal": "貼文生成→審核→重生成迴圈（post_generate.py）",
+      "_basis": "多次生成嘗試＋每次被擋下的理由回饋，最後只回一份通過審核的草稿",
+      "process_tokens": 18000,
+      "result_tokens": 400,
+      "group": "marketing",
+      "has_output_schema": true,
+      "waits_for_external": false,
+      "starts_background_process": false,
+      "must_survive_restart": false
+    },
+    {
+      "goal": "貼文發布前硬閘門審核（post_review.py）",
+      "_basis": "載入 complaints/policies/brand 三份 yaml 規則＋草稿，只回通過與否和違反哪一條",
+      "process_tokens": 4500,
+      "result_tokens": 120,
+      "group": "marketing",
+      "has_output_schema": true,
+      "waits_for_external": false,
+      "starts_background_process": false,
+      "must_survive_restart": false
+    },
+    {
+      "goal": "貼文排程與到點發布（post_schedule.py）",
+      "_basis": "草稿進佇列，到時間發布前再審一次。這一項我刻意寫成沒有回傳契約的樣子",
+      "process_tokens": 2500,
+      "result_tokens": 250,
+      "group": "marketing",
+      "has_output_schema": false,
+      "waits_for_external": false,
+      "starts_background_process": true,
+      "must_survive_restart": true
+    },
+    {
+      "goal": "L3 客訴即時通報店長（/notify）",
+      "_basis": "對話當下判定等級並通報，回傳的 message 幾乎要原封不動講給客人聽",
+      "process_tokens": 900,
+      "result_tokens": 700,
+      "group": null,
+      "has_output_schema": true,
+      "waits_for_external": true,
+      "starts_background_process": false,
+      "must_survive_restart": false
+    }
+  ]
+}

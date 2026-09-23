@@ -1,0 +1,70 @@
+[
+  {
+    "name": "manage_reservation",
+    "description": "從對話中擷取訂位資訊。沒有提到的欄位留空,不要猜測或編造。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {"type": "string", "enum": ["book", "check", "cancel", "reschedule"],
+          "description": "book(訂位) / check(查空位) / cancel(取消) / reschedule(改期)"},
+        "res_date": {"type": "string",
+          "description": "訂位日期,只有客人講出明確年月日時才填,格式 YYYY-MM-DD。客人說「明天」「這週五」這種相對日期時一律留空,不要自己換算"},
+        "res_date_raw": {"type": "string",
+          "description": "客人對日期的原話,例如「明天」「這週五」「下禮拜三」。原封不動填入,由系統換算"},
+        "party_size": {"type": "number", "description": "用餐人數"},
+        "slot_id": {"type": "string", "enum": ["first", "second", "late"],
+          "description": "時段:first(18:00) / second(20:30) / late(23:00)"},
+        "guest_name": {"type": "string", "description": "客人稱呼"},
+        "phone": {"type": "string", "description": "聯絡電話"},
+        "code": {"type": "string", "description": "訂位代碼,取消或改期時需要"}
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "quote_bill",
+    "description": "擷取客人提到的品項、人數與自備酒水瓶數。沒提到的留空。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "order_text": {"type": "string",
+          "description": "客人提到的餐點與數量,例如「松露野菇燉飯x1,暮色微醺x2」"},
+        "party_size": {"type": "number", "description": "用餐人數"},
+        "corkage_wine": {"type": "number", "description": "客人自備的葡萄酒瓶數,沒提到就留空"},
+        "corkage_spirits": {"type": "number", "description": "客人自備的烈酒瓶數,沒提到就留空"}
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "report_complaint",
+    "description": "從這次客訴對話中擷取通報所需資訊。無法判斷的欄位留空,不要編造。\nseverity 依權限階梯判斷:\nL1 = 體驗不滿(上菜慢、太吵、太冷、口味不合)\nL2 = 出餐錯誤或品質瑕疵(送錯、熟度不符、溫度不對、調錯)\nL3 = 食安、身體不適、受傷、要求賠償退費免單、提及衛生局或媒體、情緒激動或辱罵威脅",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "severity": {"type": "string", "enum": ["L1", "L2", "L3"],
+          "description": "客訴等級,只能是 L1 / L2 / L3 三者之一"},
+        "category": {"type": "string",
+          "description": "客訴類型,例如 出餐延遲 / 送錯餐 / 異物 / 服務態度 / 身體不適"},
+        "table_or_name": {"type": "string", "description": "桌號或客人稱呼"},
+        "customer_request": {"type": "string", "description": "客人明確表達的訴求"},
+        "emotion": {"type": "string", "description": "情緒強度,低 / 中 / 高"},
+        "summary": {"type": "string", "description": "一句話摘要發生了什麼事"}
+      },
+      "required": ["severity"]
+    }
+  },
+  {
+    "name": "query_ops_metric",
+    "description": "擷取店長想查的項目與授權碼。沒有授權碼就留空。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "metric": {"type": "string", "enum": ["pnl", "inventory", "schedule", "margin"],
+          "description": "查詢項目:pnl(損益) / inventory(庫存叫貨) / schedule(排班) / margin(品項毛利)"},
+        "auth_code": {"type": "string", "description": "店內授權碼"}
+      },
+      "required": []
+    }
+  }
+]

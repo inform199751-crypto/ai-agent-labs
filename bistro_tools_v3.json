@@ -1,0 +1,150 @@
+[
+  {
+    "name": "manage_reservation",
+    "description": "查詢空位、建立、改期或取消訂位,並回傳系統判定的結果。沒有提到的欄位一律留空,不要猜測或編造;回傳 ok=false 時 message 就是要對客人說的話,直接轉述,不要自行放寬條件讓它變成可以。當客人提到訂位、訂桌、幾點還有位、改時間、取消,或問某天營不營業時使用。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "book",
+            "check",
+            "cancel",
+            "reschedule"
+          ],
+          "description": "book(訂位) / check(查空位) / cancel(取消) / reschedule(改期)"
+        },
+        "res_date": {
+          "type": "string",
+          "description": "訂位日期,只有客人講出明確年月日時才填,格式 YYYY-MM-DD。客人說「明天」「這週五」這種相對日期時一律留空,不要自己換算"
+        },
+        "res_date_raw": {
+          "type": "string",
+          "description": "客人對日期的原話,例如「明天」「這週五」「下禮拜三」。原封不動填入,由系統換算"
+        },
+        "party_size": {
+          "type": "number",
+          "description": "用餐人數"
+        },
+        "slot_id": {
+          "type": "string",
+          "enum": [
+            "first",
+            "second",
+            "late"
+          ],
+          "description": "時段:first(18:00) / second(20:30) / late(23:00)"
+        },
+        "guest_name": {
+          "type": "string",
+          "description": "客人稱呼"
+        },
+        "phone": {
+          "type": "string",
+          "description": "聯絡電話"
+        },
+        "code": {
+          "type": "string",
+          "description": "訂位代碼,取消或改期時需要"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "quote_bill",
+    "description": "依客人報出的品項與數量試算帳單,含低消差額、服務費與開瓶費。辨識不到的品項會被忽略,絕不憑空生成價格;金額一律以本工具回傳為準,不要自己加總。當客人問價錢、要算多少錢、提到低消、服務費,或說自備酒水時使用。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "order_text": {
+          "type": "string",
+          "description": "客人提到的餐點與數量,例如「松露野菇燉飯x1,暮色微醺x2」"
+        },
+        "party_size": {
+          "type": "number",
+          "description": "用餐人數"
+        },
+        "corkage_wine": {
+          "type": "number",
+          "description": "客人自備的葡萄酒瓶數,沒提到就留空"
+        },
+        "corkage_spirits": {
+          "type": "number",
+          "description": "客人自備的烈酒瓶數,沒提到就留空"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "report_complaint",
+    "description": "擷取客訴通報所需資訊並依權限階梯判定等級,供後續通報店長。無法判斷的欄位留空,不要編造。當客人抱怨、表達不滿、反映餐點有問題,或提出補償退費要求時使用;一句話裡同時有抱怨與其他需求,也一律先走這裡,處理完情緒再回答另一個需求。\nseverity 依權限階梯判斷:\nL1 = 體驗不滿(上菜慢、太吵、太冷、口味不合)\nL2 = 出餐錯誤或品質瑕疵(送錯、熟度不符、溫度不對、調錯)\nL3 = 食安、身體不適、受傷、要求賠償退費免單、提及衛生局或媒體、情緒激動或辱罵威脅",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": [
+            "L1",
+            "L2",
+            "L3"
+          ],
+          "description": "客訴等級,只能是 L1 / L2 / L3 三者之一"
+        },
+        "category": {
+          "type": "string",
+          "description": "客訴類型,例如 出餐延遲 / 送錯餐 / 異物 / 服務態度 / 身體不適"
+        },
+        "table_or_name": {
+          "type": "string",
+          "description": "桌號或客人稱呼"
+        },
+        "customer_request": {
+          "type": "string",
+          "description": "客人明確表達的訴求"
+        },
+        "emotion": {
+          "type": "string",
+          "description": "情緒強度,低 / 中 / 高"
+        },
+        "summary": {
+          "type": "string",
+          "description": "一句話摘要發生了什麼事"
+        }
+      },
+      "required": [
+        "severity"
+      ]
+    }
+  },
+  {
+    "name": "query_ops_metric",
+    "description": "查詢店內營運數據:損益、品項毛利、庫存叫貨建議、排班人力與人事成本。需要店內授權碼,未授權時只回傳拒絕訊息、不得透露任何數字。當店內人員詢問成本、毛利、營收、庫存或排班時使用;對客通道一律不得呼叫。",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string",
+          "enum": [
+            "pnl",
+            "inventory",
+            "schedule",
+            "margin"
+          ],
+          "description": "查詢項目:pnl(損益) / inventory(庫存叫貨) / schedule(排班) / margin(品項毛利)"
+        },
+        "auth_code": {
+          "type": "string",
+          "description": "店內授權碼"
+        },
+        "detail": {
+          "type": "string",
+          "description": "只有在店長明確要逐人逐班的完整班表時填 true,例如「完整班表」「每個人分別排哪幾天」「把班表全部列出來」。問「這週怎麼排」「人夠不夠」這種一律留空 —— 摘要就夠了"
+        }
+      },
+      "required": []
+    }
+  }
+]
